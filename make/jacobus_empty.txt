@@ -1,0 +1,4 @@
+--empty=1
+--indent=4
+**/.gitignore
+**/Makefile
