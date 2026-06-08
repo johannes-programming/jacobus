@@ -6,7 +6,7 @@ from collections.abc import Iterable
 from importlib import metadata
 from typing import Optional
 
-from jacobus.const.Const import Const
+from jacobus._const.Const import Const
 
 __all__ = ["main", "run"]
 
