@@ -9,17 +9,25 @@ from jacobus.core import run
 
 
 class JacobusRunTests(unittest.TestCase):
-    def test_strips_trailing_whitespace_and_outer_blank_lines(self: Self) -> None:
+    def test_strips_trailing_whitespace_and_outer_blank_lines(
+        self: Self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             target = root / "sample.txt"
-            target.write_text("\n\nalpha   \n\n beta\t\t\n\n", encoding="utf-8")
+            target.write_text(
+                "\n\nalpha   \n\n beta\t\t\n\n", encoding="utf-8"
+            )
 
             run(str(root), files=["*.txt"])
 
-            self.assertEqual(target.read_text(encoding="utf-8"), "alpha\n\n beta\n")
+            self.assertEqual(
+                target.read_text(encoding="utf-8"), "alpha\n\n beta\n"
+            )
 
-    def test_rescales_space_indentation_when_indent_is_given(self: Self) -> None:
+    def test_rescales_space_indentation_when_indent_is_given(
+        self: Self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             target = root / "sample.py"
