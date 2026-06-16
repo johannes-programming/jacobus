@@ -1,22 +1,52 @@
 import argparse
+import glob
 import io
-import pathlib
+import os
 import typing
 from collections.abc import Iterable
 from importlib import metadata
 from typing import Optional
 
-from jacobus._const.Const import Const
-
 __all__ = ["main", "run"]
+
+
+def gcd(a: int, b: int, /) -> int:
+    while b:
+        a, b = b, a % b
+    return a
+
+
+def go(lines: list[str], *, indent: Optional[int]) -> list[str]:
+    diff: int
+    divisor: int
+    index: int
+    line: str
+    for index in range(len(lines)):
+        lines[index] = lines[index].rstrip() + "\n"
+    while len(lines) and lines[0] == "\n":
+        lines.pop(0)
+    while len(lines) and lines[-1] == "\n":
+        lines.pop()
+        continue
+    divisor = 0
+    if indent is None:
+        return lines
+    for line in lines:
+        diff = len(line) - len(line.lstrip(" "))
+        divisor = gcd(divisor, diff)
+    for index in range(len(lines) * bool(divisor)):
+        diff = len(lines[index]) - len(lines[index].lstrip(" "))
+        diff //= divisor
+        diff *= indent
+        lines[index] = (" " * diff) + lines[index].lstrip(" ")
+    return lines
 
 
 def main(args: typing.Optional[list[str]] = None, /) -> None:
     parser: argparse.ArgumentParser
     space: argparse.Namespace
     parser = argparse.ArgumentParser(
-        description=Const.const.varia.get("description"),
-        formatter_class=argparse.RawTextHelpFormatter,
+        description="This project normalizes whitespace.",
         fromfile_prefix_chars="@",
     )
     parser.add_argument(
@@ -27,72 +57,41 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
         version=metadata.version("jacobus"),
     )
     parser.add_argument(
-        "--file",
-        action="append",
-        default=[],
-        dest="files",
-    )
-    parser.add_argument(
         "--indent",
+        help="This option alters the indentation.",
         type=int,
     )
     parser.add_argument(
-        "root",
+        "filepatterns",
+        default=[],
+        help="These arguments give the patterns of the file.",
+        nargs="*",
     )
-    space = parser.parse_args(args)
-    # kwargs = vars(space)
-    run(
-        space.root,
-        files=space.files,
-        indent=space.indent,
-    )
+    kwargs = vars(parser.parse_args(args))
+    run(*kwargs.pop("filepatterns"), **kwargs)
 
 
 def run(
-    root: str,
-    /,
-    *,
-    files: Iterable[str] = (),
+    *filepatterns: str,
     indent: Optional[int] = None,
 ) -> None:
-    diff: int
-    divisor: int
-    index: int
-    line: str
+    absfile: str
+    absfiles: list[str]
     lines: list[str]
-    path: pathlib.Path
-    paths: list[pathlib.Path]
+    pattern: str
     stream: io.TextIOWrapper
-    paths = list()
-    for file in files:
-        for path in pathlib.Path(root).glob(file):
-            if path.is_file() and path not in paths:
-                paths.append(path)
-    for path in paths:
-        with open(file=path, mode="r") as stream:
+    absfiles = list()
+    for pattern in filepatterns:
+        for absfile in map(
+            os.path.abspath, glob.iglob(pattern, recursive=True)
+        ):
+            if absfile in absfiles:
+                continue
+            if os.path.isfile(absfile):
+                absfiles.append(absfile)
+    for absfile in absfiles:
+        with open(file=absfile, mode="r") as stream:
             lines = stream.readlines()
-        for index in range(len(lines)):
-            lines[index] = lines[index].rstrip() + "\n"
-        while len(lines) and lines[0] == "\n":
-            lines.pop(0)
-        while len(lines) and lines[-1] == "\n":
-            lines.pop()
-            continue
-        divisor = 0
-        if indent is not None:
-            for line in lines:
-                diff = len(line) - len(line.lstrip(" "))
-                divisor = gcd(divisor, diff)
-            for index in range(len(lines) * bool(divisor)):
-                diff = len(lines[index]) - len(lines[index].lstrip(" "))
-                diff //= divisor
-                diff *= indent
-                lines[index] = (" " * diff) + lines[index].lstrip(" ")
-        with open(file=path, mode="w") as stream:
+        lines = go(lines, indent=indent)
+        with open(file=absfile, mode="w") as stream:
             stream.writelines(lines)
-
-
-def gcd(a: int, b: int) -> int:
-    while b:
-        a, b = b, a % b
-    return a
