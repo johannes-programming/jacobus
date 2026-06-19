@@ -16,6 +16,24 @@ def gcd(a: int, b: int, /) -> int:
     return a
 
 
+def go_empty(*lines_: str, empty: Optional[int]) -> list[str]:
+    ans: list[str]
+    count: int
+    line: str
+    if empty is None:
+        return list(lines_)
+    ans = []
+    count = 0
+    for line in lines_:
+        if line == "\n":
+            count += 1
+        else:
+            count = 0
+        if count <= empty:
+            ans.append(line)
+    return ans
+
+
 def go_indent(*lines_: str, indent: Optional[int]) -> list[str]:
     diff: int
     divisor: int
@@ -78,6 +96,11 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
         version=metadata.version("jacobus"),
     )
     parser.add_argument(
+        "--empty",
+        help="This option limits the number of consecutive empty lines.",
+        type=int,
+    )
+    parser.add_argument(
         "--indent",
         help="This option alters the indentation.",
         type=int,
@@ -99,6 +122,7 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
 
 def run(
     *filepatterns: str,
+    empty: Optional[int] = None,
     indent: Optional[int] = None,
     sort: bool = False,
 ) -> None:
@@ -122,6 +146,7 @@ def run(
         lines = go_rstrip(*lines)
         lines = go_sort(*lines, sort=sort)
         lines = go_vstrip(*lines)
+        lines = go_empty(*lines, empty=empty)
         lines = go_indent(*lines, indent=indent)
         with open(file=absfile, mode="w") as stream:
             stream.writelines(lines)
