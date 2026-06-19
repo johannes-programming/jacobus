@@ -16,21 +16,15 @@ def gcd(a: int, b: int, /) -> int:
     return a
 
 
-def go(lines: list[str], *, indent: Optional[int]) -> list[str]:
+def go_indent(*lines_: str, indent: Optional[int]) -> list[str]:
     diff: int
     divisor: int
-    index: int
     line: str
-    for index in range(len(lines)):
-        lines[index] = lines[index].rstrip() + "\n"
-    while len(lines) and lines[0] == "\n":
-        lines.pop(0)
-    while len(lines) and lines[-1] == "\n":
-        lines.pop()
-        continue
-    divisor = 0
+    lines: list[str]
+    lines = list(lines_)
     if indent is None:
         return lines
+    divisor = 0
     for line in lines:
         diff = len(line) - len(line.lstrip(" "))
         divisor = gcd(divisor, diff)
@@ -39,6 +33,33 @@ def go(lines: list[str], *, indent: Optional[int]) -> list[str]:
         diff //= divisor
         diff *= indent
         lines[index] = (" " * diff) + lines[index].lstrip(" ")
+    return lines
+
+
+def go_rstrip(*lines_: str) -> list[str]:
+    index: int
+    lines: list[str]
+    lines = list(lines_)
+    for index in range(len(lines)):
+        lines[index] = lines[index].rstrip() + "\n"
+    return lines
+
+
+def go_sort(*lines_: str, sort: bool) -> list[str]:
+    if sort:
+        return list(sorted(lines_))
+    else:
+        return list(lines_)
+
+
+def go_vstrip(*lines_: str) -> list[str]:
+    lines: list[str]
+    lines = list(lines_)
+    while len(lines) and lines[0] == "\n":
+        lines.pop(0)
+    while len(lines) and lines[-1] == "\n":
+        lines.pop()
+        continue
     return lines
 
 
@@ -62,6 +83,11 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
         type=int,
     )
     parser.add_argument(
+        "--sort",
+        action="store_true",
+        help="This flag sorts the lines.",
+    )
+    parser.add_argument(
         "filepatterns",
         default=[],
         help="These arguments give the patterns of the file.",
@@ -74,6 +100,7 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
 def run(
     *filepatterns: str,
     indent: Optional[int] = None,
+    sort: bool = False,
 ) -> None:
     absfile: str
     absfiles: list[str]
@@ -92,6 +119,9 @@ def run(
     for absfile in absfiles:
         with open(file=absfile, mode="r") as stream:
             lines = stream.readlines()
-        lines = go(lines, indent=indent)
+        lines = go_rstrip(*lines)
+        lines = go_sort(*lines, sort=sort)
+        lines = go_vstrip(*lines)
+        lines = go_indent(*lines, indent=indent)
         with open(file=absfile, mode="w") as stream:
             stream.writelines(lines)
