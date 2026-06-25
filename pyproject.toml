@@ -28,7 +28,7 @@ license-files = [
 name = "jacobus"
 readme = "README.rst"
 requires-python = ">=3.11"
-version = "2.3.0"
+version = "2.3.1"
 
 [project.urls]
 Download = "https://pypi.org/project/jacobus/#files"
