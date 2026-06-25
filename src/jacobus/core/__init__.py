@@ -3,7 +3,6 @@ import glob
 import io
 import os
 import typing
-from collections.abc import Iterable
 from importlib import metadata
 from typing import Optional
 
@@ -70,6 +69,13 @@ def go_sort(*lines_: str, sort: bool) -> list[str]:
         return list(lines_)
 
 
+def go_unique(*lines: str, unique: bool) -> list[str]:
+    if unique:
+        return list(set(lines))
+    else:
+        return list(lines)
+
+
 def go_vstrip(*lines_: str) -> list[str]:
     lines: list[str]
     lines = list(lines_)
@@ -83,7 +89,6 @@ def go_vstrip(*lines_: str) -> list[str]:
 
 def main(args: typing.Optional[list[str]] = None, /) -> None:
     parser: argparse.ArgumentParser
-    space: argparse.Namespace
     parser = argparse.ArgumentParser(
         description="This project normalizes whitespace.",
         fromfile_prefix_chars="@",
@@ -111,6 +116,11 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
         help="This flag sorts the lines.",
     )
     parser.add_argument(
+        "--unique",
+        action="store_true",
+        help="This flag sorts the lines.",
+    )
+    parser.add_argument(
         "filepatterns",
         default=[],
         help="These arguments give the patterns of the file.",
@@ -125,6 +135,7 @@ def run(
     empty: Optional[int] = None,
     indent: Optional[int] = None,
     sort: bool = False,
+    unique: bool = False,
 ) -> None:
     absfile: str
     absfiles: list[str]
@@ -144,9 +155,10 @@ def run(
         with open(file=absfile, mode="r") as stream:
             lines = stream.readlines()
         lines = go_rstrip(*lines)
+        lines = go_indent(*lines, indent=indent)
+        lines = go_unique(*lines, unique=unique)
         lines = go_sort(*lines, sort=sort)
         lines = go_vstrip(*lines)
         lines = go_empty(*lines, empty=empty)
-        lines = go_indent(*lines, indent=indent)
         with open(file=absfile, mode="w") as stream:
             stream.writelines(lines)
