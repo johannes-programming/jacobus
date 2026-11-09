@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+__all__: list[str] = ["TestJacobusMain"]
+
+
 import unittest
 from typing import Any, Self
 from unittest.mock import patch
 
 from jacobus import main
-
-__all__ = ["TestJacobusMain"]
 
 
 class TestJacobusMain(unittest.TestCase):

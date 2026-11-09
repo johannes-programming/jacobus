@@ -1,11 +1,14 @@
+from __future__ import annotations
+
+__all__: list[str] = ["TestRun"]
+
+
 import os
 import tempfile
 import unittest
-from typing import Any, Self
+from typing import Self
 
-from jacobus import main, run
-
-__all__ = ["TestRun"]
+from jacobus import run
 
 
 class TestRun(unittest.TestCase):

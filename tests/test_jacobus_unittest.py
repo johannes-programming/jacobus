@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__: list[str] = ["JacobusRunTests"]
+
 import os
 import tempfile
 import unittest
@@ -7,8 +9,6 @@ from pathlib import Path
 from typing import Any, Self
 
 from jacobus.core import run
-
-__all__ = ["JacobusRunTests"]
 
 
 class JacobusRunTests(unittest.TestCase):

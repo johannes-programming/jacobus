@@ -2,20 +2,17 @@
 
 from __future__ import annotations
 
+__all__: list[str] = ["TestJacobus"]
+
 import contextlib
 import io
-import os
 import pathlib
-import sys
 import tempfile
-import typing
 import unittest
 from typing import Self
 from unittest.mock import patch
 
 from jacobus import main, run
-
-__all__ = ["TestJacobus"]
 
 
 class TestJacobus(unittest.TestCase):

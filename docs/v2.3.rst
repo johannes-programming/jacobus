@@ -26,13 +26,13 @@ Features
 
 The functions in ``jacobus.core`` can also be imported from ``jacobus`` directly.
 
-``main(args: Optional[Iterable[str]] = None, /) -> None``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``main(args: Iterable[str] | None = None, /) -> None``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This function is a CLI implementation of ``run``.
 
-``run(*filepatterns: str, empty: Optional[int] = None, indent: Optional[int] = None, sort: bool = False, unique: bool = False) -> None``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``run(*filepatterns: str, empty: int | None = None, indent: int | None = None, sort: bool = False, unique: bool = False) -> None``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This function finds all the files that match one of the ``filepatterns``.
 

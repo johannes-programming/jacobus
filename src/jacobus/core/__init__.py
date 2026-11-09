@@ -1,12 +1,13 @@
+from __future__ import annotations
+
+__all__: list[str] = ["main", "run"]
+
 import argparse
 import glob
 import io
 import os
-import typing
+from collections import abc
 from importlib import metadata
-from typing import Optional
-
-__all__ = ["main", "run"]
 
 
 def gcd(a: int, b: int, /) -> int:
@@ -15,15 +16,15 @@ def gcd(a: int, b: int, /) -> int:
     return a
 
 
-def go_empty(*lines_: str, empty: Optional[int]) -> list[str]:
+def go_empty(*lines: str, empty: int | None) -> list[str]:
     ans: list[str]
     count: int
     line: str
     if empty is None:
-        return list(lines_)
+        return list(lines)
     ans = []
     count = 0
-    for line in lines_:
+    for line in lines:
         if line == "\n":
             count += 1
         else:
@@ -33,7 +34,7 @@ def go_empty(*lines_: str, empty: Optional[int]) -> list[str]:
     return ans
 
 
-def go_indent(*lines_: str, indent: Optional[int]) -> list[str]:
+def go_indent(*lines_: str, indent: int | None) -> list[str]:
     diff: int
     divisor: int
     line: str
@@ -53,20 +54,20 @@ def go_indent(*lines_: str, indent: Optional[int]) -> list[str]:
     return lines
 
 
-def go_rstrip(*lines_: str) -> list[str]:
+def go_rstrip(*lines: str) -> list[str]:
     index: int
-    lines: list[str]
-    lines = list(lines_)
-    for index in range(len(lines)):
-        lines[index] = lines[index].rstrip() + "\n"
-    return lines
+    lines_: list[str]
+    lines_ = list(lines)
+    for index in range(len(lines_)):
+        lines_[index] = lines_[index].rstrip() + "\n"
+    return lines_
 
 
-def go_sort(*lines_: str, sort: bool) -> list[str]:
+def go_sort(*lines: str, sort: bool) -> list[str]:
     if sort:
-        return list(sorted(lines_))
+        return list(sorted(lines))
     else:
-        return list(lines_)
+        return list(lines)
 
 
 def go_unique(*lines: str, unique: bool) -> list[str]:
@@ -76,29 +77,32 @@ def go_unique(*lines: str, unique: bool) -> list[str]:
         return list(lines)
 
 
-def go_vstrip(*lines_: str) -> list[str]:
-    lines: list[str]
-    lines = list(lines_)
-    while len(lines) and lines[0] == "\n":
-        lines.pop(0)
-    while len(lines) and lines[-1] == "\n":
-        lines.pop()
+def go_vstrip(*lines: str) -> list[str]:
+    lines_: list[str]
+    lines_ = list(lines)
+    while len(lines_) and lines_[0] == "\n":
+        lines_.pop(0)
+    while len(lines_) and lines_[-1] == "\n":
+        lines_.pop()
         continue
-    return lines
+    return lines_
 
 
-def main(args: typing.Optional[list[str]] = None, /) -> None:
+def main(args: abc.Iterable[str] | None = None, /) -> None:
     parser: argparse.ArgumentParser
+    version: str
     parser = argparse.ArgumentParser(
         description="This project normalizes whitespace.",
         fromfile_prefix_chars="@",
+        prog="jacobus",
     )
+    version = "%(prog)s, " + metadata.version("jacobus")
     parser.add_argument(
         "-V",
         "--version",
         action="version",
         dest="version",
-        version=metadata.version("jacobus"),
+        version=version,
     )
     parser.add_argument(
         "--empty",
@@ -118,7 +122,6 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
     parser.add_argument(
         "--unique",
         action="store_true",
-        help="This flag sorts the lines.",
     )
     parser.add_argument(
         "filepatterns",
@@ -132,8 +135,8 @@ def main(args: typing.Optional[list[str]] = None, /) -> None:
 
 def run(
     *filepatterns: str,
-    empty: Optional[int] = None,
-    indent: Optional[int] = None,
+    empty: int | None = None,
+    indent: int | None = None,
     sort: bool = False,
     unique: bool = False,
 ) -> None:

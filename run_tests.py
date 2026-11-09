@@ -1,6 +1,8 @@
-import unittest
+from __future__ import annotations
 
-__all__ = ["main"]
+__all__: list[str] = ["main"]
+
+import unittest
 
 
 def main() -> unittest.TextTestResult:
