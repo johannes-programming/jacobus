@@ -71,10 +71,15 @@ def go_sort(*lines: str, sort: bool) -> list[str]:
 
 
 def go_unique(*lines: str, unique: bool) -> list[str]:
-    if unique:
-        return list(set(lines))
-    else:
+    ans: list[str]
+    line: str
+    if not unique:
         return list(lines)
+    ans = list()
+    for line in lines:
+        if line not in ans:
+            ans.append(line)
+    return ans
 
 
 def go_vstrip(*lines: str) -> list[str]:
@@ -122,6 +127,7 @@ def main(args: abc.Iterable[str] | None = None, /) -> None:
     parser.add_argument(
         "--unique",
         action="store_true",
+        help="This flag removes duplicate lines.",
     )
     parser.add_argument(
         "filepatterns",
