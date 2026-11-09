@@ -12,7 +12,7 @@ from jacobus import run
 
 
 class TestRun(unittest.TestCase):
-    def test_run_normalizes_whitespace(self: Self) -> None:
+    def test_run_normalizes_whitespace(self: Self, /) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             path = os.path.join(tmpdir, "test.txt")
 
@@ -32,7 +32,7 @@ class TestRun(unittest.TestCase):
                 ],
             )
 
-    def test_run_multiple_files_and_glob(self: Self) -> None:
+    def test_run_multiple_files_and_glob(self: Self, /) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             a = os.path.join(tmpdir, "a.txt")
             b = os.path.join(tmpdir, "b.txt")
@@ -47,7 +47,7 @@ class TestRun(unittest.TestCase):
                 with open(path) as f:
                     self.assertEqual(f.readlines(), ["    x\n"])
 
-    def test_run_deduplicates_matches(self: Self) -> None:
+    def test_run_deduplicates_matches(self: Self, /) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             path = os.path.join(tmpdir, "test.txt")
 

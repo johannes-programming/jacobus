@@ -4,11 +4,11 @@ from __future__ import annotations
 
 __all__: list[str] = ["TestJacobus"]
 
-import contextlib
 import io
 import pathlib
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from typing import Self
 from unittest.mock import patch
 
@@ -20,7 +20,7 @@ class TestJacobus(unittest.TestCase):
 
     maxDiff: int | None
 
-    def setUp(self: Self) -> None:
+    def setUp(self: Self, /) -> None:
         self.maxDiff = None
 
     def _write_text_file(
@@ -39,7 +39,7 @@ class TestJacobus(unittest.TestCase):
         text = path.read_text(encoding="utf-8")
         return text.splitlines(keepends=True)
 
-    def test_run_no_patterns(self: Self) -> None:
+    def test_run_no_patterns(self: Self, /) -> None:
         """Run with no file patterns does nothing and succeeds."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -51,7 +51,7 @@ class TestJacobus(unittest.TestCase):
             run()  # no patterns
             self.assertListEqual(self._read_lines(f), original)
 
-    def test_run_non_matching_pattern(self: Self) -> None:
+    def test_run_non_matching_pattern(self: Self, /) -> None:
         """Non-matching glob pattern is ignored, no error."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -61,7 +61,7 @@ class TestJacobus(unittest.TestCase):
             run(str(tmpdir / "*.nonexistent"))
             self.assertListEqual(self._read_lines(f), ["hello\n"])
 
-    def test_run_basic_rstrip_vstrip(self: Self) -> None:
+    def test_run_basic_rstrip_vstrip(self: Self, /) -> None:
         """Basic run rstrips lines and vstrips leading/trailing blanks."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -72,7 +72,7 @@ class TestJacobus(unittest.TestCase):
             # rstrip keeps leading ws; vstrip removed trailing blank line
             self.assertListEqual(lines, ["  hello\n", "\n", "\n", "  world\n"])
 
-    def test_run_empty_0_removes_all_blanks(self: Self) -> None:
+    def test_run_empty_0_removes_all_blanks(self: Self, /) -> None:
         """--empty 0 removes all blank lines (after vstrip)."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -82,7 +82,7 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["a\n", "b\n", "c\n"])
 
-    def test_run_empty_1_keeps_single_blanks(self: Self) -> None:
+    def test_run_empty_1_keeps_single_blanks(self: Self, /) -> None:
         """--empty 1 collapses multiple blanks to single."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -92,7 +92,7 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["a\n", "\n", "b\n", "\n", "c\n"])
 
-    def test_run_empty_none_keeps_internal_blanks(self: Self) -> None:
+    def test_run_empty_none_keeps_internal_blanks(self: Self, /) -> None:
         """Default (empty=None) keeps internal blanks after vstrip."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -102,7 +102,7 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["x\n", "\n", "\n", "y\n"])
 
-    def test_run_sort_removes_blanks_via_vstrip(self: Self) -> None:
+    def test_run_sort_removes_blanks_via_vstrip(self: Self, /) -> None:
         """--sort sorts lines and vstrip removes leading blanks."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -113,7 +113,7 @@ class TestJacobus(unittest.TestCase):
             # after sort: blanks to front; vstrip removes them
             self.assertListEqual(lines, ["a\n", "b\n", "c\n"])
 
-    def test_run_unique_removes_dups(self: Self) -> None:
+    def test_run_unique_removes_dups(self: Self, /) -> None:
         """--unique removes duplicate lines (arbitrary order from set)."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -126,7 +126,7 @@ class TestJacobus(unittest.TestCase):
             self.assertEqual(len(lines), len(processed_set))
             self.assertSetEqual(processed_set, {"a\n", "b\n", "c\n"})
 
-    def test_run_sort_and_unique(self: Self) -> None:
+    def test_run_sort_and_unique(self: Self, /) -> None:
         """--sort --unique gives sorted unique lines, blanks removed."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -136,7 +136,7 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["a\n", "b\n", "c\n"])
 
-    def test_run_indent_scales(self: Self) -> None:
+    def test_run_indent_scales(self: Self, /) -> None:
         """--indent changes indent width by gcd scaling."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -150,7 +150,7 @@ class TestJacobus(unittest.TestCase):
                 ["    def f():\n", "        print(1)\n", "            x\n"],
             )
 
-    def test_run_indent_no_change_if_zero_divisor(self: Self) -> None:
+    def test_run_indent_no_change_if_zero_divisor(self: Self, /) -> None:
         """If no common indent (divisor=0), indent option does nothing."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -160,7 +160,7 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["def f():\n", "print(1)\n"])
 
-    def test_run_indent_dedent_to_zero(self: Self) -> None:
+    def test_run_indent_dedent_to_zero(self: Self, /) -> None:
         """--indent 0 removes all leading spaces."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -170,7 +170,7 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["indented\n", "more\n"])
 
-    def test_run_combination_indent_sort_empty(self: Self) -> None:
+    def test_run_combination_indent_sort_empty(self: Self, /) -> None:
         """Test combined options: indent, unique+sort, empty in run order."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -181,7 +181,7 @@ class TestJacobus(unittest.TestCase):
             # after unique+sort+vstrip: "    c\n" sorts before "  a\n"
             self.assertListEqual(lines, ["    c\n", "  a\n", "  b\n"])
 
-    def test_run_multiple_files_and_glob(self: Self) -> None:
+    def test_run_multiple_files_and_glob(self: Self, /) -> None:
         """Multiple patterns and globs process each file once."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -197,7 +197,7 @@ class TestJacobus(unittest.TestCase):
             self.assertListEqual(self._read_lines(f2), ["x\n"])
             self.assertListEqual(self._read_lines(f3), ["w\n"])
 
-    def test_run_dedups_absfiles(self: Self) -> None:
+    def test_run_dedups_absfiles(self: Self, /) -> None:
         """Same file matched by multiple patterns processed only once."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -208,7 +208,7 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["line1\n"])  # unique removed dup
 
-    def test_run_skips_directories(self: Self) -> None:
+    def test_run_skips_directories(self: Self, /) -> None:
         """Directory paths are skipped even if pattern matches."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -219,7 +219,7 @@ class TestJacobus(unittest.TestCase):
             run(str(tmpdir / "*"))  # matches dir and o.txt
             self.assertListEqual(self._read_lines(f), ["content\n"])
 
-    def test_main_calls_run_equivalent(self: Self) -> None:
+    def test_main_calls_run_equivalent(self: Self, /) -> None:
         """main(args) equivalent to run for file processing."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -229,31 +229,45 @@ class TestJacobus(unittest.TestCase):
             lines: list[str] = self._read_lines(f)
             self.assertListEqual(lines, ["A\n", "B\n"])
 
-    def test_main_version(self: Self) -> None:
+    def test_main_version(self: Self, /) -> None:
         """--version prints version and exits 0."""
-        with patch("importlib.metadata.version") as mock_version:
-            mock_version.return_value = "0.1.0"
-            stdout: io.StringIO
-            with self.assertRaises(SystemExit) as cm:
-                with contextlib.redirect_stdout(io.StringIO()) as stdout:
-                    main(["--version"])
-            self.assertEqual(cm.exception.code, 0)
-            output: str = stdout.getvalue()
-            self.assertIn("0.1.0", output)
-
-    def test_main_help(self: Self) -> None:
-        """--help prints usage and exits 0."""
+        code: int
+        output: str
         stdout: io.StringIO
-        with patch("importlib.metadata.version"):
-            with self.assertRaises(SystemExit) as cm:
-                with contextlib.redirect_stdout(io.StringIO()) as stdout:
-                    main(["--help"])
-        self.assertEqual(cm.exception.code, 0)
-        output: str = stdout.getvalue()
+        with (
+            patch("importlib.metadata.version") as mock_version,
+            redirect_stdout(io.StringIO()) as stdout,
+        ):
+            mock_version.return_value = "0.1.0"
+            try:
+                code = main(["--version"])
+            except BaseException as exc:
+                self.assertIsNone(exc)
+            else:
+                self.assertEqual(code, 0)
+        output = stdout.getvalue()
+        self.assertIn("0.1.0", output)
+
+    def test_main_help(self: Self, /) -> None:
+        """--help prints usage and exits 0."""
+        code: int
+        output: str
+        stdout: io.StringIO
+        with (
+            patch("importlib.metadata.version"),
+            redirect_stdout(io.StringIO()) as stdout,
+        ):
+            try:
+                code = main(["--help"])
+            except BaseException as exc:
+                self.assertIsNone(exc, None)
+            else:
+                self.assertEqual(code, 0)
+        output = stdout.getvalue()
         self.assertIn("usage:", output.lower())
         self.assertIn("normalizes whitespace", output)
 
-    def test_run_empty_file(self: Self) -> None:
+    def test_run_empty_file(self: Self, /) -> None:
         """Empty file stays empty."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -261,7 +275,7 @@ class TestJacobus(unittest.TestCase):
             run(str(f), sort=True, unique=True, empty=0, indent=4)
             self.assertEqual(f.read_text(encoding="utf-8"), "")
 
-    def test_run_only_blanks(self: Self) -> None:
+    def test_run_only_blanks(self: Self, /) -> None:
         """Only-blank file becomes empty after vstrip."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -270,7 +284,7 @@ class TestJacobus(unittest.TestCase):
             run(str(f))
             self.assertEqual(f.read_text(encoding="utf-8"), "")
 
-    def test_run_preserves_final_newline(self: Self) -> None:
+    def test_run_preserves_final_newline(self: Self, /) -> None:
         """Processed non-empty file ends with exactly one newline."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)
@@ -282,7 +296,7 @@ class TestJacobus(unittest.TestCase):
             self.assertTrue(text.endswith("\n"))
             self.assertNotIn("\n\n", text)  # no extra
 
-    def test_run_with_at_file(self: Self) -> None:
+    def test_run_with_at_file(self: Self, /) -> None:
         """fromfile_prefix @ allows args from file (argparse feature)."""
         with tempfile.TemporaryDirectory() as tmp:
             tmpdir: pathlib.Path = pathlib.Path(tmp)

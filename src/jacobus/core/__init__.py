@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-__all__: list[str] = ["main", "run"]
+__all__: list[str] = ["main", "parse_args", "run"]
 
 import argparse
 import glob
 import io
+import logging
 import os
 from collections import abc
 from importlib import metadata
+from typing import Any
 
 
 def gcd(a: int, b: int, /) -> int:
@@ -93,7 +95,26 @@ def go_vstrip(*lines: str) -> list[str]:
     return lines_
 
 
-def main(args: abc.Iterable[str] | None = None, /) -> None:
+def main(args: abc.Iterable[str] | None = None) -> int:
+    filepatterns: abc.Sequence[str]
+    kwargs: dict[str, Any]
+    try:
+        kwargs = vars(parse_args(args))
+        filepatterns = kwargs.pop("filepatterns")
+        run(*filepatterns, **kwargs)
+    except SystemExit as exit:
+        if isinstance(exit.code, int):
+            return int(exit.code)
+        else:
+            return int(bool(exit.code))
+    except BaseException as exc:
+        logging.exception(exc)
+        return 1
+    else:
+        return 0
+
+
+def parse_args(args: abc.Iterable[str] | None = None) -> argparse.Namespace:
     parser: argparse.ArgumentParser
     version: str
     parser = argparse.ArgumentParser(
@@ -135,8 +156,7 @@ def main(args: abc.Iterable[str] | None = None, /) -> None:
         help="These arguments give the patterns of the file.",
         nargs="*",
     )
-    kwargs = vars(parser.parse_args(args))
-    run(*kwargs.pop("filepatterns"), **kwargs)
+    return parser.parse_args(args)
 
 
 def run(

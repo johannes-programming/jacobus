@@ -11,22 +11,28 @@ from jacobus import main
 
 
 class TestJacobusMain(unittest.TestCase):
-    def test_main_no_args(self: Self) -> None:
+    def test_main_no_args(self: Self, /) -> None:
         # Should run without crashing
         main([])
 
     def test_main_help(self: Self) -> None:
-        # argparse exits after printing help
-        with self.assertRaises(SystemExit) as cm:
-            main(["--help"])
-        self.assertEqual(cm.exception.code, 0)
+        code: int
+        try:
+            code = main(["--help"])
+        except BaseException as exc:
+            self.assertIsNone(exc)
+        else:
+            self.assertEqual(code, 0)
 
     @patch("importlib.metadata.version", return_value="1.0.0")
-    def test_main_version(self: Self, _: Any) -> None:
-        # argparse exits after printing version
-        with self.assertRaises(SystemExit) as cm:
-            main(["--version"])
-        self.assertEqual(cm.exception.code, 0)
+    def test_main_version(self: Self, _: Any, /) -> None:
+        code: int
+        try:
+            code = main(["--version"])
+        except BaseException as exc:
+            self.assertIsNone(exc)
+        else:
+            self.assertEqual(code, 0)
 
 
 if __name__ == "__main__":

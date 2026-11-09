@@ -2,6 +2,7 @@ from __future__ import annotations
 
 __all__: list[str] = ["main"]
 
+import sys
 import unittest
 
 
@@ -14,4 +15,4 @@ def main() -> unittest.TextTestResult:
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(1 - main().wasSuccessful())

@@ -14,6 +14,7 @@ from jacobus.core import run
 class JacobusRunTests(unittest.TestCase):
     def test_strips_trailing_whitespace_and_outer_blank_lines(
         self: Self,
+        /,
     ) -> None:
         root: Path
         target: Path
@@ -33,6 +34,7 @@ class JacobusRunTests(unittest.TestCase):
 
     def test_rescales_space_indentation_when_indent_is_given(
         self: Self,
+        /,
     ) -> None:
         root: Path
         target: Path
@@ -66,6 +68,7 @@ class JacobusRunTests(unittest.TestCase):
 
     def test_binary_or_invalid_utf8_file_is_left_unchanged_on_decode_error(
         self: Self,
+        /,
     ) -> None:
         original: Any
         root: Path
