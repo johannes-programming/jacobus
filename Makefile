@@ -18,18 +18,18 @@ beautiful-py: jacobus-py ruff
 
 beautiful-toml: canonicalize toml-sorted pyproject-fmt
 
-black: py311
-	conda run -n py311 pip install 'black>=24.5,<26' >/dev/null;
-	conda run -n py311 black --line-length=79 . ;
+black: make_jacobus
+	conda run -n make_jacobus pip install 'black>=24.5,<26' >/dev/null;
+	conda run -n make_jacobus black --line-length=79 . ;
 
-build: beautiful py311
-	conda run -n py311 pip install 'build>=1.3,<2' >/dev/null;
-	conda run -n py311 python -m build;
+build: beautiful make_jacobus
+	conda run -n make_jacobus pip install 'build>=1.3,<2' >/dev/null;
+	conda run -n make_jacobus python -m build;
 
-canonicalize: py311
-	conda run -n py311 pip install 'packaging<27,>=26.3';
-	conda run -n py311 pip install 'tomli-w<2,>=1.2';
-	conda run -n py311 python make/canonicalize.py -- .;
+canonicalize: make_jacobus
+	conda run -n make_jacobus pip install 'packaging<27,>=26.3';
+	conda run -n make_jacobus pip install 'tomli-w<2,>=1.2';
+	conda run -n make_jacobus python make/canonicalize.py -- .;
 
 clean:
 	rm -fr 'dist/';
@@ -38,9 +38,9 @@ clean:
 commit: add
 	git commit --allow-empty $(PARAMS);
 
-commit-version: add py311
-	conda run -n py311 pip install 'toml-get>=1.1,<2' >/dev/null;
-	git commit --allow-empty "$$(conda run -n py311 python -m toml_get @make/toml_get.txt)";
+commit-version: add make_jacobus
+	conda run -n make_jacobus pip install 'toml-get>=1.1,<2' >/dev/null;
+	git commit --allow-empty "$$(conda run -n make_jacobus python -m toml_get @make/toml_get.txt)";
 
 dist: clean build
 
