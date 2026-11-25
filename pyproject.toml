@@ -6,7 +6,7 @@ requires = [
 
 [project]
 name = "jacobus"
-version = "2.4.0.post0"
+version = "2.5.0"
 description = "This project normalizes whitespace."
 readme = "README.rst"
 keywords = []

@@ -39,6 +39,7 @@ def go_empty(*lines: str, empty: int | None) -> list[str]:
 def go_indent(*lines_: str, indent: int | None) -> list[str]:
     diff: int
     divisor: int
+    index: int
     line: str
     lines: list[str]
     lines = list(lines_)
@@ -136,6 +137,12 @@ def parse_args(args: abc.Iterable[str] | None = None) -> argparse.Namespace:
         type=int,
     )
     parser.add_argument(
+        "--exclude",
+        action="append",
+        default=[],
+        help="These options givethe patterns of files to exclude.",
+    )
+    parser.add_argument(
         "--indent",
         help="This option alters the indentation.",
         type=int,
@@ -153,7 +160,7 @@ def parse_args(args: abc.Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "filepatterns",
         default=[],
-        help="These arguments give the patterns of the file.",
+        help="These arguments give the patterns of the files.",
         nargs="*",
     )
     return parser.parse_args(args)
@@ -162,6 +169,7 @@ def parse_args(args: abc.Iterable[str] | None = None) -> argparse.Namespace:
 def run(
     *filepatterns: str,
     empty: int | None = None,
+    exclude: abc.Iterable[str] = (),
     indent: int | None = None,
     sort: bool = False,
     unique: bool = False,
@@ -180,6 +188,12 @@ def run(
                 continue
             if os.path.isfile(absfile):
                 absfiles.append(absfile)
+    for pattern in exclude:
+        for absfile in map(
+            os.path.abspath, glob.iglob(pattern, recursive=True)
+        ):
+            if absfile in absfiles:
+                absfiles.remove(absfile)
     for absfile in absfiles:
         with open(file=absfile, mode="r") as stream:
             lines = stream.readlines()

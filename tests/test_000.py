@@ -3,6 +3,7 @@ from __future__ import annotations
 __all__: list[str] = ["TestRun"]
 
 
+import io
 import os
 import tempfile
 import unittest
@@ -13,6 +14,10 @@ from jacobus import run
 
 class TestRun(unittest.TestCase):
     def test_run_normalizes_whitespace(self: Self, /) -> None:
+        f: io.TextIOWrapper
+        path: str
+        result: list[str]
+        tmpdir: str
         with tempfile.TemporaryDirectory() as tmpdir:
             path = os.path.join(tmpdir, "test.txt")
 
@@ -26,13 +31,15 @@ class TestRun(unittest.TestCase):
 
             self.assertEqual(
                 result,
-                [
-                    "  hello\n",
-                    "    world\n",
-                ],
+                ["  hello\n", "    world\n"],
             )
 
     def test_run_multiple_files_and_glob(self: Self, /) -> None:
+        a: str
+        b: str
+        f: io.TextIOWrapper
+        path: str
+        tmpdir: str
         with tempfile.TemporaryDirectory() as tmpdir:
             a = os.path.join(tmpdir, "a.txt")
             b = os.path.join(tmpdir, "b.txt")
@@ -48,6 +55,9 @@ class TestRun(unittest.TestCase):
                     self.assertEqual(f.readlines(), ["    x\n"])
 
     def test_run_deduplicates_matches(self: Self, /) -> None:
+        f: io.TextIOWrapper
+        path: str
+        tmpdir: str
         with tempfile.TemporaryDirectory() as tmpdir:
             path = os.path.join(tmpdir, "test.txt")
 

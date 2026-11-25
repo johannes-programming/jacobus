@@ -52,10 +52,10 @@ class JacobusRunTests(unittest.TestCase):
             )
 
     def test_unmatched_glob_does_not_touch_files(self: Self) -> None:
-        root: Path
-        tmp: str
-        target: Path
         original: str
+        root: Path
+        target: Path
+        tmp: str
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             target = root / "sample.txt"

@@ -7,8 +7,8 @@ import unittest
 
 
 def main() -> unittest.TextTestResult:
-    suite: unittest.TestSuite
     runner: unittest.TextTestRunner
+    suite: unittest.TestSuite
     suite = unittest.TestLoader().discover("tests")
     runner = unittest.TextTestRunner(verbosity=2)
     return runner.run(suite)

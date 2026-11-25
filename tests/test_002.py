@@ -2,6 +2,7 @@ from __future__ import annotations
 
 __all__: list[str] = ["TestJacobusMain"]
 
+import io
 import os
 import tempfile
 import unittest
@@ -12,14 +13,18 @@ from jacobus import main
 
 class TestJacobusMain(unittest.TestCase):
     def write(self: Self, /, path: Any, content: Any) -> None:
+        f: io.TextIOWrapper
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
 
     def read(self: Self, /, path: Any) -> str:
+        f: io.TextIOWrapper
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
 
     def test_empty_file(self: Self, /) -> None:
+        path: str
+        tmp: str
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "empty.txt")
             self.write(path, "")
@@ -29,6 +34,8 @@ class TestJacobusMain(unittest.TestCase):
             self.assertEqual(self.read(path), "")
 
     def test_trim_blank_lines_and_trailing_spaces(self: Self, /) -> None:
+        path: str
+        tmp: str
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "test.txt")
             self.write(path, "\n\nhello   \nworld   \n\n\n")
@@ -38,6 +45,8 @@ class TestJacobusMain(unittest.TestCase):
             self.assertEqual(self.read(path), "hello\nworld\n")
 
     def test_preserve_indent_without_flag(self: Self, /) -> None:
+        path: str
+        tmp: str
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "test.py")
             self.write(path, "    a\n        b\n")
@@ -47,6 +56,8 @@ class TestJacobusMain(unittest.TestCase):
             self.assertEqual(self.read(path), "    a\n        b\n")
 
     def test_change_indent(self: Self, /) -> None:
+        path: str
+        tmp: str
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "test.py")
             self.write(path, "    a\n        b\n")
@@ -56,6 +67,9 @@ class TestJacobusMain(unittest.TestCase):
             self.assertEqual(self.read(path), "  a\n    b\n")
 
     def test_multiple_files_via_glob(self: Self, /) -> None:
+        a: str
+        b: str
+        tmp: str
         with tempfile.TemporaryDirectory() as tmp:
             a = os.path.join(tmp, "a.txt")
             b = os.path.join(tmp, "b.txt")
@@ -69,6 +83,8 @@ class TestJacobusMain(unittest.TestCase):
             self.assertEqual(self.read(b), "bar\n")
 
     def test_duplicate_globs_do_not_break(self: Self, /) -> None:
+        path: str
+        tmp: str
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "x.txt")
             self.write(path, "hello   \n")
