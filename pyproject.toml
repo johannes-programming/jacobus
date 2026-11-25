@@ -5,36 +5,58 @@ requires = [
 ]
 
 [project]
-authors = [
-    { email = "johannes.programming@gmail.com", name = "Johannes" },
+name = "jacobus"
+version = "2.4.0.post0"
+description = "This project normalizes whitespace."
+readme = "README.rst"
+keywords = []
+license = "MIT"
+license-files = [
+    "LICENSE.txt",
 ]
+authors = [
+    { name = "Johannes", email = "johannes.programming@gmail.com" },
+]
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Typing :: Typed",
 ]
 dependencies = []
-description = "This project normalizes whitespace."
-keywords = []
-license = "MIT"
-license-files = [
-    "LICENSE.txt",
-]
-name = "jacobus"
-readme = "README.rst"
-requires-python = ">=3.11"
-version = "2.4.0"
+urls.Download = "https://pypi.org/project/jacobus/#files"
+urls.Index = "https://pypi.org/project/jacobus/"
+urls.Source = "https://github.com/johannes-programming/jacobus/"
+urls.Website = "https://jacobus.johannes-programming.online/"
 
-[project.urls]
-Download = "https://pypi.org/project/jacobus/#files"
-Index = "https://pypi.org/project/jacobus/"
-Source = "https://github.com/johannes-programming/jacobus/"
-Website = "https://jacobus.johannes-programming.online/"
+[tool.ruff]
+line-length = 79
+lint.select = [
+    "ANN001",
+    "ANN002",
+    "ANN003",
+    "F",
+    "I",
+    "PLE0604",
+    "PLE0605",
+    "RUF022",
+    "RUF068",
+    "UP035",
+]
+
+[tool.pyproject-fmt]
+indent = 4
+keep_full_version = true
+max_supported_python = "3.15"
 
 [tool.mypy]
 files = [
