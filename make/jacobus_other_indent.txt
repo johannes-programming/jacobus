@@ -1,12 +1,11 @@
 --indent=4
+--
 **/*.cfg
 **/*.css
 **/*.html
 **/*.js
 **/*.json
-**/*.py
 **/*.rst
-**/*.toml
 **/*.txt
 **/*.typed
 **/*.zsh

@@ -20,4 +20,5 @@
 --sort
 --key=tool
 --key=mypy
+--
 pyproject.toml

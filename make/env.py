@@ -63,7 +63,7 @@ def env_remove(env: str) -> subprocess.CompletedProcess:  # type: ignore[type-ar
     return subprocess.run(args, check=True)
 
 
-def main(args: list[str] | None = None) -> int:
+def main(args: abc.Iterable[str] | None = None) -> int:
     """Run script through its main CLI."""
     envs: abc.Sequence[str]
     kwargs: dict[str, Any]
@@ -81,10 +81,11 @@ def main(args: list[str] | None = None) -> int:
     except BaseException as exc:
         logging.exception(exc)
         return 1
-    return 0
+    else:
+        return 0
 
 
-def parse_args(args: list[str] | None = None) -> argparse.Namespace:
+def parse_args(args: abc.Iterable[str] | None = None, /) -> argparse.Namespace:
     parser: argparse.ArgumentParser
     parser = argparse.ArgumentParser(fromfile_prefix_chars="@")
     # parser.add_argument("--errfile", default="-")

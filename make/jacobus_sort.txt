@@ -2,4 +2,5 @@
 --indent=4
 --sort
 --unique
+--
 **/*.in
